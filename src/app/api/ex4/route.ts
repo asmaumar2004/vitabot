@@ -27,13 +27,16 @@ const formatMessage = (message: VercelChatMessage) => {
     return `${message.role}: ${message.content}`;
 };
 
-const TEMPLATE = `Answer the user's questions based only on the following context. If the answer is not in the context, reply politely that you do not have that information available.:
+const TEMPLATE = `Answer the user's questions based only on the following context:
 ==============================
 Context: {context}
 ==============================
 Current conversation: {chat_history}
 
 user: {question}
+==============================
+Please provide a detailed and accurate response based on the context above. If the context does not contain enough information to answer the question, indicate that more information is needed.
+==============================
 assistant:`;
 
 
