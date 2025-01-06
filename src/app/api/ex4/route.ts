@@ -10,19 +10,16 @@ import { HttpResponseOutputParser } from 'langchain/output_parsers';
 import { JSONLoader } from "langchain/document_loaders/fs/json";
 import { RunnableSequence } from '@langchain/core/runnables'
 import { formatDocumentsAsString } from 'langchain/util/document';
-import { CharacterTextSplitter } from 'langchain/text_splitter';
+
+import path from 'path';
 
 const loader = new JSONLoader(
-    "src/data/dataset.json.json",
+    path.resolve(process.cwd(), 'src/data/dataset.json'),
     ["/Allergies", "/Symptoms", "/Recommended Supplements", "/Additional Notes"],
 );
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
-/**
- * Basic memory formatter that stringifies and passes
- * message history directly into the model.
- */
 const formatMessage = (message: VercelChatMessage) => {
     return `${message.role}: ${message.content}`;
 };
@@ -39,19 +36,25 @@ Please provide a detailed and accurate response based on the context above. If t
 ==============================
 assistant:`;
 
-
 export async function POST(req: Request) {
     try {
-        // Extract the `messages` from the body of the request
+        if (!process.env.OPENAI_API_KEY) {
+            throw new Error("OPENAI_API_KEY is not set in environment variables");
+        }
+
         const { messages } = await req.json();
 
-        const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+        if (!messages || messages.length === 0) {
+            return Response.json(
+                { error: "Messages array is missing or empty" },
+                { status: 400 }
+            );
+        }
 
+        const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
         const currentMessageContent = messages[messages.length - 1].content;
 
         const docs = await loader.load();
-
-        
         const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
         const model = new ChatOpenAI({
@@ -62,10 +65,6 @@ export async function POST(req: Request) {
             verbose: true,
         });
 
-        /**
-       * Chat models stream message chunks rather than bytes, so this
-       * output parser handles serialization and encoding.
-       */
         const parser = new HttpResponseOutputParser();
 
         const chain = RunnableSequence.from([
@@ -79,17 +78,19 @@ export async function POST(req: Request) {
             parser,
         ]);
 
-        // Convert the response into a friendly text-stream
         const stream = await chain.stream({
             chat_history: formattedPreviousMessages.join('\n'),
             question: currentMessageContent,
         });
 
-        // Respond with the stream
         return new StreamingTextResponse(
-            stream.pipeThrough(createStreamDataTransformer()),
+            stream.pipeThrough(createStreamDataTransformer())
         );
     } catch (e: any) {
-        return Response.json({ error: e.message }, { status: e.status ?? 500 });
+        console.error('API Route Error:', e);
+        return Response.json(
+            { error: "Internal Server Error", details: e.message },
+            { status: e.status ?? 500 }
+        );
     }
 }
