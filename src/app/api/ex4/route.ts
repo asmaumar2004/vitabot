@@ -11,8 +11,10 @@ import { JSONLoader } from "langchain/document_loaders/fs/json";
 import { RunnableSequence } from '@langchain/core/runnables'
 import { formatDocumentsAsString } from 'langchain/util/document';
 
+import path from 'path';
+
 const loader = new JSONLoader(
-    "./src/data/dataset.json",
+    path.resolve(process.cwd(), 'src/data/dataset.json'),
     ["/Allergies", "/Symptoms", "/Recommended Supplements", "/Additional Notes"],
 );
 
