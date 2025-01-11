@@ -64,28 +64,30 @@ export function Chat() {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] flex flex-col bg-gradient-to-b from-white to-gray-50">
-      <header className="relative z-10 px-6 py-4 border-b bg-white/80 backdrop-blur-sm">
+    <div className="relative w-full h-[100dvh] flex flex-col bg-gradient-to-b from-background to-background/50">
+      <header className="sticky top-0 z-10 px-4 sm:px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-xl opacity-30"></div>
-              <div className="relative h-12 w-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+          {/* Logo and title section */}
+          <div className="flex items-center gap-4 transition-all-200 hover:scale-[1.02]">
+            <div className="relative" aria-hidden="true">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-xl blur-xl opacity-30"></div>
+              <div className="relative h-12 w-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
                 <Bot className="h-6 w-6 text-white" />
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 VITABOT
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Your personalized supplements advisor
               </p>
             </div>
           </div>
           
+          {/* Status indicator */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border">
               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>AI Assistant Online</span>
             </div>
@@ -203,25 +205,26 @@ export function Chat() {
           </div>
         </div>
 
-        <div className="border-t bg-white/50 backdrop-blur-sm p-4 relative z-10">
+        <div className="border-t bg-background/50 backdrop-blur-sm p-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit} className="flex items-center gap-3">
               <Input 
-                className="flex-1 rounded-xl border-2 border-purple-100 focus:border-purple-500 focus:ring-purple-500 bg-white/75 backdrop-blur-sm shadow-sm" 
+                className="flex-1 rounded-xl border-2 border-input focus:border-primary focus:ring-primary bg-background/75 backdrop-blur-sm shadow-sm h-12"
                 placeholder={showWelcome 
                   ? "Ask me about supplements, vitamins, or your health goals..." 
                   : "Enter your message here..."
                 }
                 value={input} 
                 onChange={handleInputChange}
+                aria-label="Chat input"
               />
               <Button 
                 type="submit" 
                 size="icon" 
-                className="h-12 w-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                className="h-12 w-12 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white rounded-xl shadow-lg transition-all-200 hover:scale-105 focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                aria-label="Send message"
               >
                 <Send className="h-5 w-5" />
-                <span className="sr-only">Send message</span>
               </Button>
             </form>
           </div>
