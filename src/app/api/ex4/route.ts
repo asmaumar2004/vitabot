@@ -24,17 +24,17 @@ const formatMessage = (message: VercelChatMessage) => {
     return `${message.role}: ${message.content}`;
 };
 
-const TEMPLATE = `Answer the user's questions based only on the following context:
+const TEMPLATE = `You are an intelligent assistant, here to help with the user's questions. Use the following context as a guide:
 ==============================
 Context: {context}
 ==============================
 Current conversation: {chat_history}
 
-user: {question}
+User: {question}
 ==============================
-Please provide a detailed and accurate response based on the context above. If the context does not contain enough information to answer the question, indicate that more information is needed.
+If the context doesn't have enough details, feel free to explain or suggest possible answers based on your knowledge.
 ==============================
-assistant:`;
+Assistant:`;
 
 export async function POST(req: Request) {
     try {

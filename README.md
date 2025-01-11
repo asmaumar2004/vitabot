@@ -1,119 +1,112 @@
 # Vitabot
 
-Vitabot is a project developed by [Humaima](https://github.com/humaimaa) and [Asma](https://github.com/asmaumar2004) as part of their Semester Project for the Computational Intelligence Course in BSCS.
+Vitabot is a personalized supplement recommendation system powered by AI, developed by [Humaima](https://github.com/humaimaa) and [Asma](https://github.com/asmaumar2004) as part of their Computational Intelligence Course project in BSCS.
 
 ## Project Overview
 
-Vitabot is designed to assist users with personalized supplement recommendations using AI-powered techniques. It leverages computational intelligence to provide accurate and tailored health advice.
+Vitabot is an intelligent chatbot that provides personalized supplement recommendations using OpenAI's GPT models and Next.js. It features a modern, responsive interface with real-time chat capabilities and voice input support.
 
-## Features
+## Key Features
 
-- **Personalized Supplement Recommendations**: Tailored supplement suggestions based on user health goals and conditions.
-- **Interactive Chat Interface**: Engage with an AI-powered chat interface to ask health-related questions.
-- **AI-Powered Responses**: Utilizes OpenAI's GPT-4 model to deliver accurate and detailed answers.
+- **AI-Powered Chat Interface**: Interactive conversations using GPT-4
+- **Voice Input**: Speech-to-text capability for hands-free interaction
+- **Real-time Responses**: Streaming API responses for immediate feedback
+- **Responsive Design**: Modern UI that works across all devices
+- **Markdown Support**: Rich text formatting in chat messages
+- **Suggested Queries**: Pre-defined questions for easy starting points
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript
+- **UI Framework**: Tailwind CSS, Lucide Icons
+- **AI/ML**: OpenAI GPT-4, LangChain
+- **APIs**: Web Speech API, OpenAI Streaming API
 
 ## Project Structure
 
-The project follows a clean and modular architecture:
-
 ```
-.env.local
-.eslintrc.json
-.gitignore
-.next/
-package.json
-public/
-README.md
-src/
-  app/
-    components/
-    data/
-    lib/
-tailwind.config.ts
-tsconfig.json
+vitabot/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── chat/
+│   │   │   └── ex4/
+│   │   ├── components/
+│   │   └── data/
+├── public/
+└── package.json
 ```
-
-### Key Files and Directories
-
-- **`.env.local`**: Environment variables (e.g., OpenAI API key).
-- **`.eslintrc.json`**: ESLint configuration.
-- **`.gitignore`**: Specifies files to be ignored by Git.
-- **`package.json`**: Dependency and script definitions.
-- **`public/`**: Static assets.
-- **`src/app/`**: Main application logic.
-  - **`components/`**: Reusable UI components.
-  - **`data/`**: Application data.
-  - **`lib/`**: Utility libraries.
-- **`tailwind.config.ts`**: Tailwind CSS configuration.
-- **`tsconfig.json`**: TypeScript configuration.
-
-### Important Files
-
-- **`next.config.mjs`**: Next.js configuration.
-- **`src/app/layout.tsx`**: Defines the root layout and metadata.
-- **`src/app/components/chat.tsx`**: Chat interface logic.
-- **`src/app/api/chat/route.ts`**: Handles chat API endpoints.
-- **`src/app/api/ex4/route.ts`**: Additional API endpoint for predefined requests.
 
 ## Setup Instructions
 
-To set up the project locally, follow these steps:
-
 1. **Clone the repository:**
-    ```bash
-    git clone https://github.com/humaimaa/vitabot.git
-    ```
+   ```bash
+   git clone https://github.com/humaimaa/vitabot.git
+   cd vitabot
+   ```
 
-2. **Navigate to the project directory:**
-    ```bash
-    cd vitabot
-    ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-3. **Install the required dependencies:**
-    ```bash
-    npm install
-    ```
+3. **Environment Setup:**
+   Create a `.env.local` file with:
+   ```
+   OPENAI_API_KEY=your_api_key_here
+   ```
 
-4. **Set up environment variables:**
-    Create a `.env.local` file in the root directory and add the following:
-    ```env
-    OPENAI_API_KEY=your_openai_api_key_here
-    ```
+4. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
 
-5. **Run the project:**
-    ```bash
-    npm start
-    ```
+5. **Access the Application:**
+   Open [http://localhost:3000](http://localhost:3000)
 
-Access the app at `http://localhost:3000`.
+## Key Components
 
-## Deployment
+- **Chat Interface**: `src/app/components/chat.tsx`
+- **API Routes**: 
+  - `src/app/api/chat/route.ts`: Main chat endpoint
+  - `src/app/api/ex4/route.ts`: Enhanced chat with context
 
-The project can be deployed on Vercel. Ensure the `OPENAI_API_KEY` environment variable is configured in your deployment settings.
+## Features in Detail
 
-## API Endpoints
+### AI Chat Interface
+- Real-time message streaming
+- Markdown formatting support
+- Chat history management
+- Loading states and animations
 
-- **POST /api/ex4**: Defined in `src/app/api/ex4/route.ts`
-- **POST /api/chat**: Defined in `src/app/api/chat/route.ts`
+### Voice Input
+- Speech-to-text conversion
+- Recording status indicator
+- Timer display during recording
 
-## Additional Information
+### UI/UX
+- Responsive layout
+- Dark/light mode support
+- Animated transitions
+- Loading indicators
+- Message typing indicators
 
-### Tailwind CSS Configuration
-Tailwind CSS is used for styling, with configurations located in `tailwind.config.ts`.
+## Contributing
 
-### ESLint Configuration
-Linting is enforced via ESLint, configured in `.eslintrc.json`.
-
-## Screenshots
-
-### Screenshot 1
-![Screenshot 1](./screenshot1.png)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## Contributors
 
 - [Humaima](https://github.com/humaimaa)
 - [Asma](https://github.com/asmaumar2004)
 
-## License
+## Interface
 
-This project is licensed under the MIT License.
+<div style="display: flex; align-items: flex-start;">
+    <img src="./screenshot1.png" style="height: auto; max-height: 100%;" alt="Screenshot 1"/>
+</div>
+
