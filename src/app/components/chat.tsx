@@ -4,8 +4,34 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useChat } from "ai/react"
 import { useRef, useEffect, useState } from 'react'
-import { Send, Bot, Brain, Shield, Leaf, AlertCircle, User } from 'lucide-react'
+import { Send, Bot, Brain, Shield, Leaf, AlertCircle, User, Mic, MicOff } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+
+// Define interfaces for TypeScript
+interface SuggestionButtonProps {
+  icon: string;
+  text: string;
+  onClick: () => void;
+}
+
+// Add type definitions for the Web Speech API
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
+  }
+}
+
+// Add SpeechRecognitionEvent type
+interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
 
 const suggestedChats = [
   {
@@ -40,12 +66,6 @@ const features = [
   }
 ];
 
-interface SuggestionButtonProps {
-  icon: string;
-  text: string;
-  onClick: () => void;
-}
-
 const SuggestionButton = ({ icon, text, onClick }: SuggestionButtonProps) => (
   <button
     onClick={onClick}
@@ -65,14 +85,30 @@ const SuggestionButton = ({ icon, text, onClick }: SuggestionButtonProps) => (
 
 export function Chat() {
   const [showWelcome, setShowWelcome] = useState(true);
-  const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  
+  const recordingTimer = useRef<NodeJS.Timeout | null>(null);
+  
+  const { messages, input, handleInputChange, handleSubmit, setInput, append, isLoading: aiLoading } = useChat({
     api: '/api/ex4',
     onError: (e) => {
       console.log(e)
+      setIsLoading(false);
+    },
+    onFinish: () => {
+      setIsLoading(false);
     }
   });
 
   const chatParent = useRef<HTMLDivElement>(null);
+
+  // Check if speech recognition is supported
+  useEffect(() => {
+    setSpeechSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  }, []);
 
   useEffect(() => {
     const domNode = chatParent.current
@@ -87,12 +123,83 @@ export function Chat() {
     }
   }, [messages]);
 
-  const handleSuggestedChat = (suggestion: string) => {
-    setInput(suggestion);
-    const form = document.querySelector('form');
-    if (form) {
-      form.requestSubmit();
+  // Add cleanup for recording timer
+  useEffect(() => {
+    return () => {
+      if (recordingTimer.current) {
+        clearInterval(recordingTimer.current);
+      }
+    };
+  }, []);
+
+  // Updated chat initiation function
+  const initiateChat = async (text: string) => {
+    setIsLoading(true);
+    setShowWelcome(false);
+    
+    try {
+      await append({
+        content: text,
+        role: 'user',
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setInput('');
+      setIsLoading(false);
     }
+  };
+
+  const handleSuggestedChat = (suggestion: string) => {
+    initiateChat(suggestion);
+  };
+
+  // Initialize speech recognition
+  const startListening = () => {
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    recognition.onstart = () => {
+      setIsListening(true);
+      setRecordingTime(0);
+      // Start timer
+      recordingTimer.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    };
+    
+    recognition.onresult = async (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setIsListening(false);
+      // Clear timer
+      if (recordingTimer.current) {
+        clearInterval(recordingTimer.current);
+      }
+      // Add timeout before processing
+      setTimeout(async () => {
+        await initiateChat(transcript);
+      }, 500);
+    };
+    
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      if (recordingTimer.current) {
+        clearInterval(recordingTimer.current);
+      }
+    };
+    
+    recognition.onend = () => {
+      setIsListening(false);
+      if (recordingTimer.current) {
+        clearInterval(recordingTimer.current);
+      }
+    };
+    
+    recognition.start();
   };
 
   return (
@@ -170,7 +277,7 @@ export function Chat() {
                     </div>
                   </div>
 
-                  {/* Suggested Queries - Improved Section */}
+                  {/* Suggested Queries */}
                   <div className="space-y-4">
                     <div className="text-center">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Get Started</h3>
@@ -240,27 +347,63 @@ export function Chat() {
           </div>
         </div>
 
-        {/* Input Area */}
+        {/* Input Area with Audio Button */}
         <div className="border-t bg-white p-4">
           <div className="max-w-5xl mx-auto">
             <form onSubmit={handleSubmit} className="flex items-center gap-3">
               <Input 
                 className="flex-1 h-11 px-4 rounded-xl border border-gray-200 bg-gray-50 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500"
-                placeholder={showWelcome 
-                  ? "Ask me about supplements, vitamins, or your health goals..." 
-                  : "Type your message here..."
+                placeholder={isLoading || aiLoading
+                  ? "Processing..."
+                  : showWelcome 
+                    ? "Ask me about supplements, vitamins, or your health goals..." 
+                    : "Type your message here..."
                 }
                 value={input} 
                 onChange={handleInputChange}
                 aria-label="Chat input"
+                disabled={isLoading || aiLoading}
               />
+              
+              {speechSupported && (
+                <div className="relative">
+                  <Button
+                    type="button"
+                    size="icon"
+                    onClick={startListening}
+                    disabled={isListening || isLoading || aiLoading}
+                    className={`h-11 w-11 ${
+                      isListening 
+                        ? 'bg-pink-600' 
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600'
+                    } hover:opacity-90 text-white rounded-xl transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:hover:scale-100`}
+                    aria-label={isListening ? 'Stop recording' : 'Start recording'}
+                  >
+                    {isListening ? (
+                      <MicOff className="h-4 w-4 animate-pulse" />
+                    ) : (
+                      <Mic className="h-4 w-4" />
+                    )}
+                  </Button>
+                  {isListening && (
+                    <>
+                      <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-red-500 animate-pulse" />
+                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-gray-500">
+                        Recording {recordingTime}s
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              
               <Button 
                 type="submit" 
                 size="icon" 
+                disabled={isLoading || aiLoading}
                 className="h-11 w-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white rounded-xl transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:hover:scale-100"
                 aria-label="Send message"
               >
-                <Send className="h-4 w-4" />
+                <Send className={`h-4 w-4 ${(isLoading || aiLoading) ? 'animate-pulse' : ''}`} />
               </Button>
             </form>
           </div>
@@ -269,3 +412,4 @@ export function Chat() {
     </div>
   );
 }
+
