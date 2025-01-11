@@ -64,8 +64,8 @@ export function Chat() {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] flex flex-col bg-gradient-to-b from-background to-background/50">
-      <header className="sticky top-0 z-10 px-4 sm:px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
+    <div className="relative w-full h-[100dvh] flex flex-col bg-white">
+      <header className="sticky top-0 z-10 px-4 sm:px-6 py-4 bg-background/80 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           {/* Logo and title section */}
           <div className="flex items-center gap-4 transition-all-200 hover:scale-[1.02]">
@@ -87,7 +87,7 @@ export function Chat() {
           
           {/* Status indicator */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full">
               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>AI Assistant Online</span>
             </div>
@@ -103,7 +103,7 @@ export function Chat() {
             {showWelcome ? (
               <div className="h-full flex items-center justify-center p-4">
                 <div className="space-y-8 max-w-3xl w-full">
-                  <div className="p-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg border border-purple-100">
+                  <div className="p-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl">
                     <div className="flex items-center justify-center space-x-3 mb-6">
                       <Bot className="h-12 w-12 text-purple-600" />
                       <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -117,7 +117,7 @@ export function Chat() {
 
                     <div className="grid md:grid-cols-3 gap-6 mb-8">
                       {features.map((feature, index) => (
-                        <div key={index} className="p-4 bg-white rounded-xl shadow-sm">
+                        <div key={index} className="p-4 bg-white rounded-xl">
                           <div className="flex items-center space-x-3 mb-3">
                             <feature.icon className="h-6 w-6 text-purple-500" />
                             <h3 className="font-semibold text-purple-900">{feature.title}</h3>
@@ -143,7 +143,7 @@ export function Chat() {
                         <Button
                           key={index}
                           variant="outline"
-                          className="w-full h-auto min-h-[2.5rem] px-4 py-2 whitespace-normal text-sm font-medium bg-white hover:bg-purple-50 border-purple-100 hover:border-purple-200 text-purple-800 transition-colors duration-200"
+                          className="w-full h-auto min-h-[2.5rem] px-4 py-2 whitespace-normal text-sm font-medium bg-white hover:bg-purple-50 text-black-600 hover:text-black-700 transition-colors duration-200"
                           onClick={() => handleSuggestedChat(suggestion)}
                         >
                           {suggestion}
@@ -175,7 +175,7 @@ export function Chat() {
                       relative px-4 py-3 rounded-2xl
                       ${m.role === 'user' 
                         ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-br-sm shadow-lg' 
-                        : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm'
+                        : 'bg-white text-gray-800 rounded-bl-sm shadow-sm'
                       }
                     `}>
                       <p className="text-sm leading-relaxed">{m.content}</p>
@@ -205,11 +205,11 @@ export function Chat() {
           </div>
         </div>
 
-        <div className="border-t bg-background/50 backdrop-blur-sm p-4 relative z-10">
+        <div className="bg-background/50 backdrop-blur-sm p-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit} className="flex items-center gap-3">
               <Input 
-                className="flex-1 rounded-xl border-2 border-input focus:border-primary focus:ring-primary bg-background/75 backdrop-blur-sm shadow-sm h-12"
+                className="flex-1 rounded-xl border border-input focus:border-primary focus:ring-primary bg-background/75 backdrop-blur-sm shadow-sm h-12"
                 placeholder={showWelcome 
                   ? "Ask me about supplements, vitamins, or your health goals..." 
                   : "Enter your message here..."
