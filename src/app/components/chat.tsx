@@ -87,7 +87,7 @@ export function Chat() {
           
           {/* Status indicator */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-full border">
               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>AI Assistant Online</span>
             </div>
@@ -136,14 +136,14 @@ export function Chat() {
                     </div>
                   </div>
 
-                  <div className="text-center">
-                    <p className="text-gray-600 mb-4">Try asking about:</p>
-                    <div className="flex flex-wrap gap-3 justify-center">
+                  <div className="text-center px-4 sm:px-0">
+                    <p className="text-gray-600 mb-6">Try asking about:</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
                       {suggestedChats.map((suggestion, index) => (
                         <Button
                           key={index}
                           variant="outline"
-                          className="bg-white hover:bg-purple-50 text-sm"
+                          className="w-full h-auto min-h-[2.5rem] px-4 py-2 whitespace-normal text-sm font-medium bg-white hover:bg-purple-50 border-purple-100 hover:border-purple-200 text-purple-800 transition-colors duration-200"
                           onClick={() => handleSuggestedChat(suggestion)}
                         >
                           {suggestion}
